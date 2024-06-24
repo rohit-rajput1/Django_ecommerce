@@ -10,6 +10,8 @@ from django.contrib.auth.forms import UserCreationForm
 from .form import SignUpForm,UpdateUserForm,ChangePasswordForm,UserInfoForm
 from django import forms
 from django.db.models import Q
+import json
+from cart.cart import Cart
 
 def search(request):
     if request.method == 'POST':
@@ -114,21 +116,43 @@ def about(request):
 
 def login_user(request):
     if request.method == "POST":
-        # why does we write request.POST['username'] instead of request.POST.get('username')?
-        # because if username is not found in request.POST then it will raise an error and also in html file we wrote name="username" so it will be found in request.POST.
-        username = request.POST['username']
-        password = request.POST['password']
-        user = authenticate(request,username=username,password=password)
+        # Using .get() instead of indexing to avoid KeyError
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+
+        # If either username or password is not provided, handle the error
+        if not username or not password:
+            messages.error(request, "Please provide both username and password.")
+            return redirect('login')
+
+        user = authenticate(request, username=username, password=password)
         if user is not None:
-            login(request,user)
-            messages.success(request, ("You are now logged in."))
+            login(request, user)
+
+            # On login Get User Profile
+            current_user = Profile.objects.get(user__id=request.user.id)
+            # Now we want to get their saved cart from the database.
+            saved_cart = current_user.old_cart
+            # Now we will convert the database string to a list.
+            if saved_cart:
+                # Convert to dictionary using JSON
+                converted_cart = json.loads(saved_cart)
+
+                # Now we want to add the loaded dictionary to our sessions
+                cart = Cart(request)
+
+                # Here we will loop through the cart and add the items from the database in a key, value pair because of python dictionary.
+                for key, value in converted_cart.items():
+                    cart.db_add(product=key, quantity=value)
+
+            messages.success(request, "You are now logged in.")
             return redirect('home')
         else:
-            messages.success(request, ("Error Occured! Please try again."))
+            messages.error(request, "Error Occurred! Please try again.")
             return redirect('login')
     else:
-        # If people didnt fill out the form they just want to see the webpage.
-        return render(request,'login.html',{})
+        # If people didn't fill out the form they just want to see the webpage.
+        return render(request, 'login.html', {})
 
 
 def logout_user(request):

@@ -18,6 +18,28 @@ class Cart():
         # Now, assign the cart to the instance's attribute
         self.cart = cart
 
+    def db_add(self, product, quantity):
+        product_id = str(product)
+        product_qty = str(quantity)
+        # Logic to check if the product is already in the cart.
+        if product_id in self.cart:
+            pass
+        else:
+            # self.cart[product_id] = {'price': str(product.price), 'qty': product_qty}
+            # we have passed the integer of the product quantity.
+            self.cart[product_id] = int(product_qty)
+
+        self.session.modified = True
+
+        if self.request.user.is_authenticated:
+            #Get the current user profile
+            current_user = Profile.objects.filter(user__id=self.request.user.id)
+            #Convert the cart to a string "{'1': 2, '2': 3} to {"1":2,"2":3}"
+            carty = str(self.cart)
+            carty = carty.replace("\'","\"")
+            # Now we will the carty variable in to the profile model.
+            current_user.update(old_cart=str(carty))
+
     def add(self, product, quantity):
         product_id = str(product.id)
         product_qty = str(quantity)
@@ -96,8 +118,17 @@ class Cart():
         # Updating the cart
         ourcart[product_id] = product_qty
 
-
         self.session.modified = True
+        
+
+        if self.request.user.is_authenticated:
+            #Get the current user profile
+            current_user = Profile.objects.filter(user__id=self.request.user.id)
+            #Convert the cart to a string "{'1': 2, '2': 3} to {"1":2,"2":3}"
+            carty = str(self.cart)
+            carty = carty.replace("\'","\"")
+            # Now we will the carty variable in to the profile model.
+            current_user.update(old_cart=str(carty))
 
         thing =self.cart
         return thing
@@ -109,3 +140,12 @@ class Cart():
             del self.cart[product_id]
 
         self.session.modified = True
+
+        if self.request.user.is_authenticated:
+            #Get the current user profile
+            current_user = Profile.objects.filter(user__id=self.request.user.id)
+            #Convert the cart to a string "{'1': 2, '2': 3} to {"1":2,"2":3}"
+            carty = str(self.cart)
+            carty = carty.replace("\'","\"")
+            # Now we will the carty variable in to the profile model.
+            current_user.update(old_cart=str(carty))
