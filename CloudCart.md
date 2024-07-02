@@ -270,12 +270,15 @@ python eks.py
 - Now we have our pods, services and deployments running in the cluster.
 
 **Pods:**
+
 ![Screenshot from 2024-07-01 17-46-43](https://github.com/rohit-rajput1/rangam/assets/76991475/23d752f3-8152-4899-8a03-9bf04a57cf18)
 
 **Service:**
+
 ![Screenshot from 2024-07-01 17-47-40](https://github.com/rohit-rajput1/rangam/assets/76991475/cf843952-09bc-4383-b6f7-d4645a1fa9fa)
 
 **Deployment:**
+
 ![Screenshot from 2024-07-01 17-47-06](https://github.com/rohit-rajput1/rangam/assets/76991475/90304448-1c68-4385-9fea-2129946e3257)
 
 - **Step-4:** At last, we will do the port forwarding to access the Django application running in the cluster.
