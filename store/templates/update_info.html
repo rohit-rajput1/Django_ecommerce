@@ -14,15 +14,17 @@
 </header>
 <div class="container">
     <div class="row">
-        <center>
+        <!-- <center>  -->
             <div class="col-8">
-
-                <br><br>
+                <br>
+                <h4><strong>Billing Information</strong></h4>
                     <form method="POST" action="{% url 'update_info' %}">
                         {% csrf_token %}
 
                         {{form.as_p}}
-                        <br><br>
+                        <br>
+                        <h4><strong>Shipping Information</strong></h4>
+                        {{ shipping_form.as_p }}
 
                         <button type="submit" class="btn btn-secondary">Update Profile</button>
                     </form>
@@ -32,7 +34,7 @@
                 <br><br>
                 <br><br>
             </div>
-        </center>
+        <!-- </center> -->
     </div>
 </div>
 

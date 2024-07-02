@@ -8,6 +8,10 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 # Now we will import SignUpForm from form.py file.
 from .form import SignUpForm,UpdateUserForm,ChangePasswordForm,UserInfoForm
+
+from payment.forms import ShippingForm
+from payment.models import ShippingAddress
+
 from django import forms
 from django.db.models import Q
 import json
@@ -43,19 +47,27 @@ def update_info(request):
     #     #return render(request, 'update_info.html', {})
     if request.user.is_authenticated:
         try:
-            current_user = Profile.objects.get(user=request.user)
+            current_user_profile = Profile.objects.get(user=request.user)
+            try:
+                shipping_user = ShippingAddress.objects.get(user=request.user)
+            except ShippingAddress.DoesNotExist:
+                shipping_user = ShippingAddress(user=request.user)
+                shipping_user.save()
         except Profile.DoesNotExist:
-            current_user = Profile(user=request.user)
-            current_user.save()
+            current_user_profile = Profile(user=request.user)
+            current_user_profile.save()
 
-        form = UserInfoForm(request.POST or None, instance=current_user)
+        # Initialize forms
+        form = UserInfoForm(request.POST or None, instance=current_user_profile)
+        shipping_form = ShippingForm(request.POST or None, instance=shipping_user)
 
-        if form.is_valid():
+        if form.is_valid() or shipping_form.is_valid():
             form.save()
+            shipping_form.save()
             messages.success(request, "Your info has been updated.")
             return redirect('home')
 
-        return render(request, "update_info.html", {'form': form})
+        return render(request, "update_info.html", {'form': form, 'shipping_form': shipping_form})
     else:
         messages.error(request, "You must be logged in to view this page.")
         return redirect('home')
