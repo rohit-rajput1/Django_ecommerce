@@ -3,7 +3,7 @@
 {% block content %}
         
 <header class="bg-dark py-5">
-    <div class="container px-4 px-lg-5 my-5">
+    <div class="container px-4 px-lg-5 my-1">
         <div class="text-center text-white">
             <h1 class="display-4 fw-bolder">Shopping Cart</h1>
             <p class="lead fw-normal text-white-50 mb-0">
@@ -84,7 +84,10 @@
         <br>
 	{% endfor %}
   <br><br>
+  <div align="right">
   <h3>Total :$ {{ totals }}</h3>
+  <a href="{% url 'checkout' %}" class="btn btn-success">Checkout</a>
+  </div>
     {% else %}
     <br><br><br><br>
         <center><h1>Fill the Cart and Shop more!!!</h1></center>
