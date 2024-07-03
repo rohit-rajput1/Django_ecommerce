@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block content %}
+        
+<header class="bg-dark py-3">
+    <div class="container px-4 px-lg-5 my-3">
+        <div class="text-center text-white">
+            <h1 class="display-4 fw-bolder">Checkout</h1>
+            <p class="lead fw-normal text-white-50 mb-0">
+                Review Your Orders...
+            </p>
+        </div>
+    </div>
+</header>
+<br>
+<div class="container">
+    <div class="row">
+        <div class="col-md-6 offset-md-3">
+            <div class="card">
+                <div class="card-header">
+                  <strong>Order Summary</strong>
+                </div>
+                <div class="card-body">
+                {% for product in cart_products %}
+                    {{ product.name }}:
+                        {% if product.is_sale %}
+                            ${{ product.sale_price}}
+                        {% else %}
+                            ${{ product.price}}
+                        {% endif %}
+                    <br>
+                    <small>
+                    Quantity:
+                    {% for key,value in quantities.items %}
+                        {% if key == product.id|slugify%}
+                            {{ value }}
+                        {% endif %}
+                    {% endfor %}
+                    </small>
+                    <br><br>  
+                {% endfor %}
+                <a href="" class="btn btn-sm btn-outline-success">Update Items</a>
+                <br>
+                <div align="right"><strong>Total: ${{ totals }}</strong> </div>
+                <br>
+                </div>
+            </div>
+              <br><br>
+            <div class="card">
+                <div class="card-header">
+                    <strong>Shipping Info</strong>
+                </div>
+                <div class="card-body">
+                    {{ shipping_form.as_p }}
+                </div>
+                <br>
+            </div>
+            <br>
+            <div align="right"><a href="#" class="btn btn-secondary">Continue to Billing</a></div>
+        </div>
+    </div>
+</div>
+
+
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+
+{% endblock %}
