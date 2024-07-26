@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
 from store.models import Product
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 # Create your models here.
 class ShippingAddress(models.Model):
@@ -14,13 +16,23 @@ class ShippingAddress(models.Model):
     shipping_zip_code = models.CharField(max_length=10, blank=True, null=True)
     shipping_country = models.CharField(max_length=100)
 
-    # Since we don't pularalize the model name, we will add this class Meta to the model.
     class Meta:
-        verbose_name_plural = 'Shipping Address'
+        verbose_name_plural = 'Shipping Addresses'
     
     def __str__(self):
         return f"Shipping Address - {str(self.id)}"
-    
+
+# Assuming you have a Profile model defined elsewhere
+@receiver(post_save, sender=User)
+def create_shipping(sender, instance, created, **kwargs):
+    if created:
+        ShippingAddress.objects.create(user=instance)
+        
+
+# Now we will automate the profile 
+post_save.connect(create_shipping, sender=User)
+
+
 # Create Order Model:
 class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
